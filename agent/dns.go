@@ -15,12 +15,14 @@ func parseQuery(m *dns.Msg) {
 		case dns.TypeA:
 			fmt.Printf("DNS - Query for %s\n", q.Name)
 			rwMutex.Lock() // prevent wacky antics
-			ip := records[q.Name]
+			ipl := records[q.Name]
 			rwMutex.Unlock()
-			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s A %s", q.Name, ip))
-				if err == nil {
-					m.Answer = append(m.Answer, rr)
+			if len(ipl) != 0 {
+				for _, ip := range ipl {
+					rr, err := dns.NewRR(fmt.Sprintf("%s A %s", q.Name, ip))
+					if err == nil {
+						m.Answer = append(m.Answer, rr)
+					}
 				}
 			}
 		}

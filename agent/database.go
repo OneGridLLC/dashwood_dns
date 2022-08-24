@@ -17,7 +17,7 @@ var (
 	rwMutex    sync.RWMutex
 )
 
-var records = map[string]string{} /*{
+var records = map[string][]string{} /*{
 	"google.com.":    "64.233.177.102",
 	"microsoft.com.": "20.84.181.62",
 	"fake.service.":  "127.0.0.1",
@@ -129,10 +129,11 @@ func fetchRecords(force bool) error {
 		data = append(data, i)
 	}
 
-	newRecords := map[string]string{}
+	newRecords := map[string][]string{}
 
 	for _, r := range data {
-		newRecords[r.domain] = r.address
+		newRecords[r.domain] = append(newRecords[r.domain], r.address)
+		//newRecords[r.domain] = r.address
 	}
 
 	rwMutex.RLock() // prevent wacky antics
