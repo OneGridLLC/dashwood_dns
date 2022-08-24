@@ -1,0 +1,33 @@
+-- create database
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS pairs (
+	key TEXT NOT NULL,
+	value TEXT NOT NULL,
+	PRIMARY KEY (key)
+); -- this contains the update match string
+
+CREATE TABLE IF NOT EXISTS records (
+	id uuid DEFAULT uuid_generate_v4 (),
+	domain TEXT NOT NULL,
+	address TEXT NOT NULL,
+	created TIMESTAMP NOT NULL,
+	PRIMARY KEY (domain)
+); -- has to have an ID because a domain can link to more than one address
+
+
+
+-- insert new items
+
+INSERT INTO pairs (key, value) VALUES ('lastAccess', ?); -- update access match string
+
+INSERT INTO records(domain, address, created) VALUES (?, ?, CURRENT_TIMESTAMP); -- insert new record
+
+
+
+-- remove items
+
+DELETE FROM records WHERE domain=?; -- remove all records for a given domain
+
+DELETE FROM records WHERE id=?; -- remove a specific record assuming there is more than one record for a given domain
