@@ -4,7 +4,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/miekg/dns"
@@ -14,7 +13,7 @@ func parseQuery(m *dns.Msg) {
 	for _, q := range m.Question {
 		switch q.Qtype {
 		case dns.TypeA:
-			log.Printf("DNS - Query for %s\n", q.Name)
+			fmt.Printf("DNS - Query for %s\n", q.Name)
 			rwMutex.Lock() // prevent wacky antics
 			ip := records[q.Name]
 			rwMutex.Unlock()
@@ -48,10 +47,10 @@ func initDNS() {
 	// start server
 	port := dnsPort
 	server := &dns.Server{Addr: ":" + strconv.Itoa(port), Net: "udp"}
-	log.Printf("DNS - Starting at %d\n", port)
+	fmt.Printf("DNS - Starting at %d\n", port)
 	err := server.ListenAndServe()
 	defer server.Shutdown()
 	if err != nil {
-		log.Fatalf("DNS - Failed to start server: %s\n ", err.Error())
+		fmt.Printf("DNS - Failed to start server: %s\n ", err.Error())
 	}
 }

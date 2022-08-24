@@ -12,7 +12,7 @@ import (
 
 var (
 	password   = os.Getenv("PostgresPass")
-	lastAccess = ""
+	lastAccess = "0"
 	dnsdb      *sql.DB
 	rwMutex    sync.RWMutex
 )
@@ -34,7 +34,7 @@ func initDB() {
 		panic(err)
 	}
 
-	defer db.Close()
+	//defer db.Close() does not work with coroutine
 
 	dnsdb = db
 
@@ -48,7 +48,7 @@ func initDB() {
 		panic(err)
 	}
 
-	go fetchRecordsRoutine() // async records updating
+	go fetchRecordsRoutine() // records updating need not be synchronous
 }
 
 // Moved to controller
@@ -69,25 +69,28 @@ CREATE TABLE IF NOT EXISTS records (
 	domain TEXT NOT NULL,
 	address TEXT NOT NULL,
 	created TIMESTAMP NOT NULL,
-	PRIMARY KEY (domain)
+	PRIMARY KEY (id)
 ); -- has to have an ID because a domain can link to more than one address
 
 */
 
 const fetchRecordsSQL = `SELECT domain, address FROM records;`
-const testAccessMatchSQL = `SELECT value FROM records WHERE value=?`
+
+//const testAccessMatchSQL = `SELECT value FROM pairs WHERE value = ?;`
+const getLastAccessSQL = `SELECT value FROM pairs WHERE key = 'lastAccess'`
 
 func testAccessMatch() (bool, string, error) {
-	row := dnsdb.QueryRow(testAccessMatchSQL, lastAccess)
+	row := dnsdb.QueryRow(getLastAccessSQL)
 	var identifier string
 	err := row.Scan(&identifier)
-	if err != nil && err == sql.ErrNoRows {
-		return false, "", nil // value did not match
-	} else if err != nil {
-		return false, "", err // arbitrary error
+	if err != nil {
+		return false, "", err // any error
 	}
 
-	return true, identifier, nil // value did match
+	if identifier == lastAccess {
+		return true, identifier, nil // value did not match
+	}
+	return false, identifier, nil // value did not match
 }
 
 type recordSmall struct { // not a full record but all that is necessary for this program
@@ -99,13 +102,15 @@ func fetchRecords(force bool) error {
 	if !force {
 		matches, newAccess, err := testAccessMatch()
 
-		lastAccess = newAccess
 		if err != nil {
 			return err
 		}
+
 		if matches {
 			return nil
 		}
+
+		lastAccess = newAccess // doesn't match, update it
 	}
 
 	rows, err := dnsdb.Query(fetchRecordsSQL)
@@ -117,7 +122,7 @@ func fetchRecords(force bool) error {
 
 	for rows.Next() {
 		i := recordSmall{}
-		err := rows.Scan(i.domain, i.address)
+		err := rows.Scan(&i.domain, &i.address)
 		if err != nil {
 			return err
 		}
