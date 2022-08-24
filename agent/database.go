@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"os"
 	"sync"
 	"time"
 
@@ -11,7 +10,6 @@ import (
 )
 
 var (
-	password   = os.Getenv("PostgresPass")
 	lastAccess = "0"
 	dnsdb      *sql.DB
 	rwMutex    sync.RWMutex
@@ -25,7 +23,7 @@ var records = map[string][]string{} /*{
 
 func initDB() {
 
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", dbhost, dbport, dbuser, password, dbname)
+	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", *dbhost, *dbport, *dbuser, password, *dbname)
 
 	// rand.Seed(int64(time.Now().UnixNano()))
 
