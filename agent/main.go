@@ -13,7 +13,7 @@ const (
 	dbhost           = "localhost"
 	dbuser           = "postgres"
 	dbname           = "dns"
-	dnsRefreshPeriod = 5 * time.Second
+	dnsRefreshPeriod = 1 * time.Minute // TODO: figure out sweet spot (do profiling)
 )
 
 func main() {
