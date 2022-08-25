@@ -145,9 +145,7 @@ func fetchRecords(force bool) error {
 }
 
 func fetchRecordsRoutine() {
-	for {
-		time.Sleep(dnsRefreshPeriod)
-
+	for range time.Tick(*dnsRefreshPeriod) {
 		err := fetchRecords(false)
 		if err != nil {
 			fmt.Println("DB - Error fetching records: ", err)

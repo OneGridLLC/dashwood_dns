@@ -12,9 +12,7 @@ import (
 )
 
 const (
-	dnsPort          = 53
-	profileServe     = ":51280"
-	dnsRefreshPeriod = 1 * time.Minute // TODO: figure out sweet spot (do profiling)
+	profileServe = ":51280" // port that probably isn't used
 )
 
 var (
@@ -24,6 +22,9 @@ var (
 	dbname   = flag.String("dbname", "dns", "Postgres database name")
 	profile  = flag.Bool("profile", false, "Enable profiling")
 	password = os.Getenv("PostgresPass")
+
+	dnsPort          = flag.Int("dnsport", 53, "Port to serve DNS")
+	dnsRefreshPeriod = flag.Duration("dnsrefreshperiod", 1*time.Minute, "") // arbitrary amount of time to check for DNS changes
 )
 
 func main() {

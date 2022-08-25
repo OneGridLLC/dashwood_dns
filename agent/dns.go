@@ -47,7 +47,7 @@ func initDNS() {
 	dns.HandleFunc(".", handleDnsRequest)
 
 	// start server
-	port := dnsPort
+	port := *dnsPort
 	server := &dns.Server{Addr: ":" + strconv.Itoa(port), Net: "udp"}
 	fmt.Printf("DNS - Starting at %d\n", port)
 	err := server.ListenAndServe()
