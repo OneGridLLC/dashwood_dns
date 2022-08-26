@@ -1,6 +1,6 @@
 module dashwood_dns_agent
 
-go 1.17
+go 1.19
 
 require (
 	github.com/lib/pq v1.10.6
