@@ -11,4 +11,4 @@ RUN go build -v -o agent .
 
 CMD [ "/app/agent" ]
 
-# copied from https://hub.docker.com/_/golang
+# copied from https://golangdocs.com/golang-docker
