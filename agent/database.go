@@ -56,25 +56,14 @@ func initDB() {
 
 /* -- DATABASE STRUCTURE
 
-CREATE TABLE IF NOT EXISTS pairs (
-	key TEXT NOT NULL,
-	value TEXT NOT NULL,
-	PRIMARY KEY (key)
-); -- this contains the update match string
-
-CREATE TABLE IF NOT EXISTS records (
-	id uuid DEFAULT uuid_generate_v4 (),
-	domain TEXT NOT NULL,
-	address TEXT NOT NULL,
-	created TIMESTAMP NOT NULL,
-	PRIMARY KEY (id)
-); -- has to have an ID because a domain can link to more than one address
+Check controller/database_template.txt
+got too big to copy into here
 
 */
 
 const fetchRecordsSQL = `SELECT domain, address FROM records;`
 
-//const testAccessMatchSQL = `SELECT value FROM pairs WHERE value = ?;`
+// const testAccessMatchSQL = `SELECT value FROM pairs WHERE value = ?;`
 const getLastAccessSQL = `SELECT value FROM pairs WHERE key = 'lastAccess'`
 
 func testAccessMatch() (bool, string, error) {
